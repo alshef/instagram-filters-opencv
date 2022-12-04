@@ -81,6 +81,15 @@ def cartoonify(image):
     return cartoon
 
 
+def sketch(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    invert_img=cv2.bitwise_not(gray)
+    blur_img=cv2.GaussianBlur(invert_img, (111,111),0)
+    invblur_img=cv2.bitwise_not(blur_img)
+    sketch_img=cv2.divide(gray, invblur_img, scale=256.0)
+    return sketch_img
+
+
 def process_image(image_path: Path, out_path: Path) -> None:
     image = cv2.imread(str(image_path))
 
@@ -109,6 +118,9 @@ def process_image(image_path: Path, out_path: Path) -> None:
 
     cartoon = cartoonify(image)
     cv2.imwrite(str(out_path / "cartoon.png"), cartoon)
+
+    sketch_image = sketch(image)
+    cv2.imwrite(str(out_path / "sketch.png"), sketch_image)
 
 
 if __name__ == "__main__":
